@@ -11,9 +11,31 @@ import (
 	"sync"
 )
 
+var supportedExtensions = map[string]bool{
+	// Image formats
+	".jpg":  true,
+	".jpeg": true,
+	".png":  true,
+	".gif":  true,
+	".bmp":  true,
+	".webp": true,
+	".tiff": true,
+	".svg":  true,
+	// Video formats
+	".mp4":  true,
+	".mov":  true,
+	".avi":  true,
+	".mkv":  true,
+	".flv":  true,
+	".wmv":  true,
+	".webm": true,
+	".mpeg": true,
+	".mpg":  true,
+	".3gp":  true,
+}
+
 const (
-	targetExtension = ".mp4"
-	concurrency     = 10
+	concurrency = 10
 )
 
 func main() {
@@ -77,7 +99,11 @@ func validateFolder(path string) error {
 }
 
 func shouldProcess(file os.DirEntry) bool {
-	return !file.IsDir() && strings.EqualFold(filepath.Ext(file.Name()), targetExtension)
+	if file.IsDir() {
+		return false
+	}
+	ext := strings.ToLower(filepath.Ext(file.Name()))
+	return supportedExtensions[ext]
 }
 
 func renameFile(folderPath string, file os.DirEntry) error {
@@ -87,7 +113,8 @@ func renameFile(folderPath string, file os.DirEntry) error {
 	}
 
 	oldPath := filepath.Join(folderPath, file.Name())
-	newPath := filepath.Join(folderPath, uuid+targetExtension)
+	ext := strings.ToLower(filepath.Ext(file.Name()))
+	newPath := filepath.Join(folderPath, uuid+ext)
 
 	if err := os.Rename(oldPath, newPath); err != nil {
 		return fmt.Errorf("filesystem error: %w", err)

@@ -1,3 +1,3 @@
-# rename-mp4-uuid
+# rename-uuid
 
 go build -ldflags="-s -w" .

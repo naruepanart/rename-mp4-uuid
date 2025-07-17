@@ -1,3 +1,3 @@
-module rename-mp4-uuid
+module rename-uuid
 
 go 1.24.4
